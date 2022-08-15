@@ -211,6 +211,21 @@
                 android:hint="请选择或者输入你的分辨率——width" />
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="选取本地视频"
+                android:textSize="20sp"
+                />
+<Button
+    android:id="@+id/select_local_video_bt"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:text="选取本地视频"
+    />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

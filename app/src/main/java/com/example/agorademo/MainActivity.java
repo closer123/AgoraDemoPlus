@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.util.Date;
 
 import io.agora.rtc.Constants;
@@ -23,7 +24,6 @@ import io.agora.rtc.IVideoEncodedFrameObserver;
 import io.agora.rtc.IVideoFrameObserver;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.VideoEncodedFrame;
-import io.agora.rtc.internal.DeviceUtils;
 import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.CAMERA
     };
     // 填写你的项目在 Agora 控制台中生成的 App ID。
-    private final static String mAppId = "APPID";
+    private final static String mAppId = "1a410d207deb42259b763b6edb585cab";
     // 填写频道名称。
     private String mChannelName;
     private RtcEngine mRtcEngine;
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     TextView mTextDimensionsSelected;
     TextView mTextFrameSelected;
     TextView mTextCamreaCollection;
+    TextView mTextVideoSentBitrate;
+    TextView mTextSentDimensions;
     // 获取 bundle 的值
     private int mDimensionWith;
     private int mDimensionHeight;
@@ -117,50 +119,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    IVideoEncodedFrameObserver mVideoEncodedFrameObserver = new IVideoEncodedFrameObserver() {
+//    IVideoEncodedFrameObserver mVideoEncodedFrameObserver = new IVideoEncodedFrameObserver() {
+//
+//
+//
+//        @Override
+//        public boolean onVideoEncodedFrame(VideoEncodedFrame videoEncodedFrame) {
+//            mEncodeFrameNums++;
+//            long mEnCurrentTime = new Date().getTime();
+//            if (mEnCurrentTime > mLastEncodeTime + 1000) {
+//                mLastEncodeTime = mEnCurrentTime;
+//                updateEncodeFrameNums(mEncodeFrameNums);
+//                mEncodeFrameNums = 0;
+//            }
+//            return true;
+//        }
+//
+//    };
 
-        @Override
-        public boolean onVideoEncodedFrame(VideoEncodedFrame videoEncodedFrame) {
-            mEncodeFrameNums++;
-            long mEnCurrentTime = new Date().getTime();
-            if (mEnCurrentTime > mLastEncodeTime + 1000) {
-                mLastEncodeTime = mEnCurrentTime;
-                updateEncodeFrameNums(mEncodeFrameNums);
-                mEncodeFrameNums = 0;
-            }
-            return true;
-        }
-
-    };
-
-    IVideoFrameObserver mVideoFrameObserver = new IVideoFrameObserver() {
-        @Override
-        public boolean onPreEncodeVideoFrame(VideoFrame videoFrame) {
-            mPrecodeFrameNums++;
-            long mCurrentTime = new Date().getTime();
-            if (mCurrentTime > mLastPrecodeTime + 1000) {
-                mLastPrecodeTime = mCurrentTime;
-                updatePrecodeFrameNums(mPrecodeFrameNums);
-                mPrecodeFrameNums = 0;
-            }
-            return super.onPreEncodeVideoFrame(videoFrame);
-        }
-
-        @Override
-        public boolean onCaptureVideoFrame(VideoFrame videoFrame) {
-            return true;
-        }
-
-        @Override
-        public boolean onRenderVideoFrame(int uid, VideoFrame videoFrame) {
-            return true;
-        }
-
-        @Override
-        public int getObservedFramePosition() {
-            return POSITION_PRE_ENCODER;
-        }
-    };
+//    IVideoFrameObserver mVideoFrameObserver = new IVideoFrameObserver() {
+//        @Override
+//        public boolean onPreEncodeVideoFrame(VideoFrame videoFrame) {
+//            mPrecodeFrameNums++;
+//            long mCurrentTime = System.currentTimeMillis();
+//            if (mCurrentTime > mLastPrecodeTime + 1000) {
+//                mLastPrecodeTime = mCurrentTime;
+//                updatePrecodeFrameNums(mPrecodeFrameNums);
+//                mPrecodeFrameNums = 0;
+//            }
+//            return super.onPreEncodeVideoFrame(videoFrame);
+//        }
+//
+//        @Override
+//        public boolean onCaptureVideoFrame(VideoFrame videoFrame) {
+//            return true;
+//        }
+//
+//        @Override
+//        public boolean onRenderVideoFrame(int uid, VideoFrame videoFrame) {
+//            return true;
+//        }
+//
+//        @Override
+//        public int getObservedFramePosition() {
+//            return POSITION_PRE_ENCODER;
+//        }
+//    };
 
     protected void onDestroy() {
         super.onDestroy();
@@ -194,8 +198,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             throw new RuntimeException("Check the error.");
         }
-        mRtcEngine.registerVideoFrameObserver(mVideoFrameObserver);
-        mRtcEngine.registerVideoEncodedFrameObserver(mVideoEncodedFrameObserver);
+//        mRtcEngine.registerVideoFrameObserver(mVideoFrameObserver);
+//        mRtcEngine.registerVideoEncodedFrameObserver(mVideoEncodedFrameObserver);
         // 设置Configuration参数
         mRtcEngine.setVideoEncoderConfiguration(videoEncoderConfiguration);
         mRtcEngine.setCameraCapturerConfiguration(cameraCapturerConfiguration);
@@ -221,6 +225,15 @@ public class MainActivity extends AppCompatActivity {
 
         Toast toast;
 
+        @Override
+        public void onLocalVideoStats(LocalVideoStats stats) {
+            super.onLocalVideoStats(stats);
+
+            mTextSentDimensions.setText(""+stats.encodedFrameHeight+"*"+stats.encodedFrameWidth);
+            mTextVideoSentBitrate.setText(stats.sentBitrate+"kbps");
+            mTextPreCodeFrame.setText(stats.captureFrameRate+"fps");
+            mTextEncodeFrame.setText(stats.encoderOutputFrameRate+"fps");
+        }
 
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
@@ -276,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
     };
 
+
     private boolean checkSelfPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, requestCode);
@@ -284,25 +298,25 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void updatePrecodeFrameNums(int frameNums) {
-        MainActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String out = "" + frameNums;
-                mTextPreCodeFrame.setText(out);
-            }
-        });
-    }
-
-    private void updateEncodeFrameNums(int encodeframeNums) {
-        MainActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String out = "" + encodeframeNums;
-                mTextEncodeFrame.setText(out);
-            }
-        });
-    }
+//    private void updatePrecodeFrameNums(int frameNums) {
+//        MainActivity.this.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                String out = "" + frameNums;
+//                mTextPreCodeFrame.setText(out);
+//            }
+//        });
+//    }
+//
+//    private void updateEncodeFrameNums(int encodeframeNums) {
+//        MainActivity.this.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                String out = "" + encodeframeNums;
+//                mTextEncodeFrame.setText(out);
+//            }
+//        });
+//    }
 
     private void initView() {
         mTextPreCodeFrame = findViewById(R.id.tv_precode_frame);
@@ -312,6 +326,9 @@ public class MainActivity extends AppCompatActivity {
         mTextDimensionsSelected = findViewById(R.id.tv_dimensions_selected);
         mTextFrameSelected = findViewById(R.id.tv_frame_selected);
         mTextCamreaCollection = findViewById(R.id.tv_camrea_collection);
+        mTextVideoSentBitrate=findViewById(R.id.tv_sent_bitrate);
+        mTextSentDimensions=findViewById(R.id.tv_sent_dimension);
+
     }
 
     private void putBundle(){

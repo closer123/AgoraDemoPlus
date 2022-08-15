@@ -1,10 +1,21 @@
 package com.example.agorademo;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -26,6 +37,7 @@ public class SettingActivity extends AppCompatActivity {
     private Spinner mSpinnerCamreaCollection;
     private Button mRtcBtn;
     private Button mRtcUrlBtn;
+    private Button mSelectLocalVideoBtn;
     private EditText mEdDimensionsWidth;
     private EditText mEdDimensionsHeight;
     private EditText mEdBitrate;
@@ -34,11 +46,28 @@ public class SettingActivity extends AppCompatActivity {
     private EditText mEdPutStreamUrl;
     private Bundle mBundle;
 
+    private ActivityResultLauncher<Intent> mActivityResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         ZXingLibrary.initDisplayOpinion(this);
+        mActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() != RESULT_OK || result.getData() == null) {
+                Log.e("TAG", "onCreate: 哈哈厉害了");
+            }
+        });
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && !Environment.isExternalStorageManager()) {
+            try {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                mActivityResultLauncher.launch(intent);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
         mBundle = new Bundle();
         initView();
         mSpinnerDimensions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -282,8 +311,24 @@ public class SettingActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+        mSelectLocalVideoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent();
+                mBundle.putString("dimensions_width", mEdDimensionsWidth.getText().toString());
+                mBundle.putString("dimensions_height", mEdDimensionsHeight.getText().toString());
+                mBundle.putString("Camera_height", mEdCameraCollectionHeight.getText().toString());
+                mBundle.putString("Camera_width", mEdCameraCollectionWidth.getText().toString());
+                mBundle.putString("bitrate", mEdBitrate.getText().toString());
+                mBundle.putString("putstream",mEdPutStreamUrl.getText().toString());
+                intent.putExtras(mBundle);
+                intent.setClass(getApplicationContext(),LocalVideoMainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -303,6 +348,12 @@ public class SettingActivity extends AppCompatActivity {
                 }
             }
         }
+//        else if(requestCode==2){
+//            Uri muri=data.getData();
+//            ContentResolver mcr=this.getContentResolver();
+//         Toast.makeText(getApplicationContext(),""+muri,Toast.LENGTH_SHORT).show();
+//         mSelectLocalVideoBtn.setText(muri.toString());
+//        }
     }
 
     private void initView() {
@@ -314,6 +365,7 @@ public class SettingActivity extends AppCompatActivity {
         mSpinnerCamreaCollection = findViewById(R.id.spinner_camrea_collection);
         mRtcBtn = findViewById(R.id.rtc_bt);
         mRtcUrlBtn = findViewById(R.id.rtc_url_bt);
+        mSelectLocalVideoBtn=findViewById(R.id.select_local_video_bt);
         mEdDimensionsWidth = findViewById(R.id.et_dimensions_width);
         mEdDimensionsHeight = findViewById(R.id.et_dimensions_height);
         mEdBitrate = findViewById(R.id.et_bitrate);
