@@ -3,8 +3,6 @@ package com.example.agorademo.util;
 import android.content.Context;
 import android.opengl.GLES20;
 
-import com.example.agorademo.fragment.GlUtil;
-
 /**
  * Created by tujh on 2018/1/24.
  */

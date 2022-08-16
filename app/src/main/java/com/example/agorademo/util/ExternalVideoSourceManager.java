@@ -16,11 +16,9 @@ import android.view.Surface;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.agorademo.fragment.GLThreadContext;
-import com.example.agorademo.fragment.GlUtil;
-import com.example.agorademo.fragment.IExternalVideoInput;
-import com.example.agorademo.localvideo.LocalVideoInput;
-import com.example.agorademo.screenshare.ScreenShareInput;
+import com.example.agorademo.input.IExternalVideoInput;
+import com.example.agorademo.input.LocalVideoInput;
+import com.example.agorademo.input.ScreenShareInput;
 
 import io.agora.rtc.mediaio.IVideoFrameConsumer;
 import io.agora.rtc.mediaio.IVideoSource;

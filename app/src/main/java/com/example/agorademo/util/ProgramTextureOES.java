@@ -19,8 +19,6 @@ package com.example.agorademo.util;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
-import com.example.agorademo.fragment.GlUtil;
-
 
 public class ProgramTextureOES extends Program {
 

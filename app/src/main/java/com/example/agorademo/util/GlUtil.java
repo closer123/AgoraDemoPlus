@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.agorademo.fragment;
+package com.example.agorademo.util;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES11Ext;

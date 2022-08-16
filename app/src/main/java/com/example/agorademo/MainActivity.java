@@ -20,8 +20,7 @@ import java.util.Date;
 
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.IVideoEncodedFrameObserver;
-import io.agora.rtc.IVideoFrameObserver;
+
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.VideoEncodedFrame;
 import io.agora.rtc.video.CameraCapturerConfiguration;
@@ -168,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onDestroy() {
         super.onDestroy();
+        if(mPutStreamUrl!=null)
         mRtcEngine.stopRtmpStream(mPutStreamUrl);
         mRtcEngine.leaveChannel();
         mRtcEngine.destroy();

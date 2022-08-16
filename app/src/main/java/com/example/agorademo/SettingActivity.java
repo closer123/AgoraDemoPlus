@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -47,6 +48,7 @@ public class SettingActivity extends AppCompatActivity {
     private Bundle mBundle;
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +69,9 @@ public class SettingActivity extends AppCompatActivity {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 666);
         }
         mBundle = new Bundle();
         initView();
@@ -298,7 +303,7 @@ public class SettingActivity extends AppCompatActivity {
                 mBundle.putString("Camera_height", mEdCameraCollectionHeight.getText().toString());
                 mBundle.putString("Camera_width", mEdCameraCollectionWidth.getText().toString());
                 mBundle.putString("bitrate", mEdBitrate.getText().toString());
-                mBundle.putString("putstream",mEdPutStreamUrl.getText().toString());
+                mBundle.putString("putstream", mEdPutStreamUrl.getText().toString());
                 intent.putExtras(mBundle);
                 intent.setClass(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
@@ -314,15 +319,15 @@ public class SettingActivity extends AppCompatActivity {
         mSelectLocalVideoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent();
+                Intent intent = new Intent();
                 mBundle.putString("dimensions_width", mEdDimensionsWidth.getText().toString());
                 mBundle.putString("dimensions_height", mEdDimensionsHeight.getText().toString());
                 mBundle.putString("Camera_height", mEdCameraCollectionHeight.getText().toString());
                 mBundle.putString("Camera_width", mEdCameraCollectionWidth.getText().toString());
                 mBundle.putString("bitrate", mEdBitrate.getText().toString());
-                mBundle.putString("putstream",mEdPutStreamUrl.getText().toString());
+                mBundle.putString("putstream", mEdPutStreamUrl.getText().toString());
                 intent.putExtras(mBundle);
-                intent.setClass(getApplicationContext(),LocalVideoMainActivity.class);
+                intent.setClass(getApplicationContext(), LocalVideoMainActivity.class);
                 startActivity(intent);
             }
         });
@@ -332,7 +337,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            // 处理二维码扫描结果
+        // 处理二维码扫描结果
         if (requestCode == 1) {
             // 处理扫描结果（在界面上显示）
             if (null != data) {
@@ -348,28 +353,22 @@ public class SettingActivity extends AppCompatActivity {
                 }
             }
         }
-//        else if(requestCode==2){
-//            Uri muri=data.getData();
-//            ContentResolver mcr=this.getContentResolver();
-//         Toast.makeText(getApplicationContext(),""+muri,Toast.LENGTH_SHORT).show();
-//         mSelectLocalVideoBtn.setText(muri.toString());
-//        }
     }
 
     private void initView() {
         mSpinnerDimensions = findViewById(R.id.spinner_dimensions);
         mSpinnerVideoProfile = findViewById(R.id.spinner_video_profile);
         mSpinnerBitrate = findViewById(R.id.spinner_bitrate);
-        mSpinnerVideoFrame= findViewById(R.id.spinner_video_frame);
+        mSpinnerVideoFrame = findViewById(R.id.spinner_video_frame);
         mSpinnerCamreaDirection = findViewById(R.id.spinner_camrea_direction);
         mSpinnerCamreaCollection = findViewById(R.id.spinner_camrea_collection);
         mRtcBtn = findViewById(R.id.rtc_bt);
         mRtcUrlBtn = findViewById(R.id.rtc_url_bt);
-        mSelectLocalVideoBtn=findViewById(R.id.select_local_video_bt);
+        mSelectLocalVideoBtn = findViewById(R.id.select_local_video_bt);
         mEdDimensionsWidth = findViewById(R.id.et_dimensions_width);
         mEdDimensionsHeight = findViewById(R.id.et_dimensions_height);
         mEdBitrate = findViewById(R.id.et_bitrate);
-        mEdPutStreamUrl= findViewById(R.id.et_putstream_url);
+        mEdPutStreamUrl = findViewById(R.id.et_putstream_url);
         mEdCameraCollectionHeight = findViewById(R.id.et_carm_collection_height);
         mEdCameraCollectionWidth = findViewById(R.id.et_carm_collection_width);
 

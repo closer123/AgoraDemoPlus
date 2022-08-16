@@ -1,7 +1,9 @@
-package com.example.agorademo.fragment;
+package com.example.agorademo.input;
 
 import android.util.Size;
 import android.view.Surface;
+
+import com.example.agorademo.util.GLThreadContext;
 
 public interface IExternalVideoInput {
     /**

@@ -1,4 +1,4 @@
-package com.example.agorademo.localvideo;
+package com.example.agorademo.input;
 
 import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
@@ -13,12 +13,10 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.example.agorademo.fragment.GLThreadContext;
-import com.example.agorademo.fragment.IExternalVideoInput;
+import com.example.agorademo.util.GLThreadContext;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 
 
 public class LocalVideoInput implements IExternalVideoInput, TextureView.SurfaceTextureListener {
@@ -67,7 +65,6 @@ public class LocalVideoInput implements IExternalVideoInput, TextureView.Surface
     public boolean isRunning() {
         return !mStopped;
     }
-
 
 
     @Override
@@ -130,7 +127,7 @@ public class LocalVideoInput implements IExternalVideoInput, TextureView.Surface
     }
 
     @TargetApi(21)
-    private Size getSize(){
+    private Size getSize() {
         return new Size(mVideoWidth, mVideoHeight);
     }
 
@@ -270,7 +267,7 @@ public class LocalVideoInput implements IExternalVideoInput, TextureView.Surface
                     }
                 }
 
-                if (mStopped ||  (mCodecBufferInfo.flags &
+                if (mStopped || (mCodecBufferInfo.flags &
                         MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     break;
                 }

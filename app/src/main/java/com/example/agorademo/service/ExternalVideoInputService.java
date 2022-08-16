@@ -1,4 +1,4 @@
-package com.example.agorademo.fragment;
+package com.example.agorademo.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,6 +13,7 @@ import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
+import com.example.agorademo.service.IExternalVideoInputService;
 import com.example.agorademo.util.ExternalVideoSourceManager;
 
 
@@ -25,15 +26,12 @@ public class ExternalVideoInputService extends Service {
     private IExternalVideoInputService mService;
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
         mSourceManager = new ExternalVideoSourceManager(this.getApplicationContext());
-        mService = new IExternalVideoInputService.Stub()
-        {
+        mService = new IExternalVideoInputService.Stub() {
             @Override
-            public boolean setExternalVideoInput(int type, Intent intent) throws RemoteException
-            {
+            public boolean setExternalVideoInput(int type, Intent intent) throws RemoteException {
                 return mSourceManager.setExternalVideoInput(type, intent);
             }
         };
@@ -41,15 +39,13 @@ public class ExternalVideoInputService extends Service {
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent)
-    {
+    public IBinder onBind(Intent intent) {
 //        startForeground();
         startSourceManager();
         return mService.asBinder();
     }
 
-    private void startForeground()
-    {
+    private void startForeground() {
         createNotificationChannel();
 
         Intent notificationIntent = new Intent(getApplicationContext(),
@@ -61,27 +57,21 @@ public class ExternalVideoInputService extends Service {
                 .setContentTitle(CHANNEL_ID)
                 .setContentIntent(pendingIntent);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
             builder.setChannelId(CHANNEL_ID);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIFICATION_ID, builder.build(),
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
-        }
-        else
-        {
+        } else {
             startForeground(NOTIFICATION_ID, builder.build());
         }
     }
 
-    private void createNotificationChannel()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID, CHANNEL_ID, importance);
@@ -91,36 +81,30 @@ public class ExternalVideoInputService extends Service {
         }
     }
 
-    private void startSourceManager()
-    {
+    private void startSourceManager() {
         mSourceManager.start();
     }
 
     @Override
-    public boolean onUnbind(Intent intent)
-    {
+    public boolean onUnbind(Intent intent) {
         stopSourceManager();
         stopForeground(true);
         return true;
     }
 
-    private void stopSourceManager()
-    {
-        if (mSourceManager != null)
-        {
+    private void stopSourceManager() {
+        if (mSourceManager != null) {
             mSourceManager.stop();
         }
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
     }
 }

@@ -6,7 +6,6 @@
     tools:context=".fragment.SwichExternalVideoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
     <RelativeLayout
         android:id="@+id/fl_local"
         android:layout_width="match_parent"
@@ -67,7 +66,6 @@
                     android:text="码率选择"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -114,7 +112,6 @@
                     android:text="选择帧率"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -138,7 +135,6 @@
                     android:text="编码前帧率"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -161,9 +157,7 @@
                     android:text="编码后帧率"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -185,8 +179,8 @@
                     android:text="实际发送码率"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -207,36 +201,23 @@
                     android:text="实际分辨率"
                     android:textColor="@color/red"
                     android:textSize="15dp" />
-
             </LinearLayout>
-
-
         </LinearLayout>
-
     </FrameLayout>
 
-
-
-
-
-        <Button
-            android:id="@+id/btn_join"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:text="加入频道" />
+    <Button
+        android:id="@+id/btn_join"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/select_bt"
+        android:layout_alignParentRight="true"
+        android:text="加入频道" />
 
     <Button
         android:id="@+id/select_bt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_above="@id/btn_join"
-        android:text="选取本地视频"/>
-
-
-
-
-
+        android:layout_alignParentBottom="true"
+        android:text="选取本地视频" />
 </RelativeLayout>

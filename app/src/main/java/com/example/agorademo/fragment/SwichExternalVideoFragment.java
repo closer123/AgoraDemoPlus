@@ -1,6 +1,8 @@
 package com.example.agorademo.fragment;
+
 import static com.example.agorademo.util.Constant.ENGINE;
 import static com.example.agorademo.util.Constant.TEXTUREVIEW;
+
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
@@ -10,8 +12,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -28,28 +32,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.agorademo.MainActivity;
 import com.example.agorademo.R;
+import com.example.agorademo.service.ExternalVideoInputService;
+import com.example.agorademo.service.IExternalVideoInputService;
 import com.example.agorademo.util.ExternalVideoSourceManager;
+
 import java.io.File;
+
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
-
-public class SwichExternalVideoFragment extends BaseFragment implements  View.OnClickListener {
+public class SwichExternalVideoFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = SwichExternalVideoFragment.class.getSimpleName();
 
 
-    private RelativeLayout fl_local;
-    private  Bundle mBundle;
-    private Button join, mSelectBt;
-    private int myUid;
+    private RelativeLayout mFlLocal;
+    private Bundle mBundle;
+    private Button mJoinBtn, mSelectBt;
     private boolean joined = false;
-    private static  final int MAX_NUM=1000;
-    private static  final int MIN_NUM=1;
-    private  String path;
+    private static final int MAX_NUM = 1000;
+    private static final int MIN_NUM = 1;
+    private String path;
     private String mLocalVideoPath;
     private boolean mLocalVideoExists = false;
     private IExternalVideoInputService mService;
@@ -65,12 +70,11 @@ public class SwichExternalVideoFragment extends BaseFragment implements  View.On
     TextView mTextSentDimensions;
 
 
-
-//    Bundle
-private int mDimensionWith ;
-    private int mDimensionHeight ;
+    //    Bundle
+    private int mDimensionWith;
+    private int mDimensionHeight;
     private int mVideoProfileMode;
-    private  int mBitrateNum;
+    private int mBitrateNum;
     private String mVideoFrame;
     private String mPutStreamUrl;
     private VideoEncoderConfiguration.FRAME_RATE mFrameRate;
@@ -110,7 +114,7 @@ private int mDimensionWith ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =inflater.inflate(R.layout.fragment_swich_external_video, container, false);
+        View view = inflater.inflate(R.layout.fragment_swich_external_video, container, false);
         return view;
     }
 
@@ -118,9 +122,9 @@ private int mDimensionWith ;
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        join=view.findViewById(R.id.btn_join);
-        mSelectBt=view.findViewById(R.id.select_bt);
-        fl_local = view.findViewById(R.id.fl_local);
+        mJoinBtn = view.findViewById(R.id.btn_join);
+        mSelectBt = view.findViewById(R.id.select_bt);
+        mFlLocal = view.findViewById(R.id.fl_local);
 
         mTextPreCodeFrame = view.findViewById(R.id.tv_precode_frame);
         mTextEncodeFrame = view.findViewById(R.id.tv_encode_frame);
@@ -128,9 +132,9 @@ private int mDimensionWith ;
         mTextBitrateSelected = view.findViewById(R.id.tv_bitrate_selected);
         mTextDimensionsSelected = view.findViewById(R.id.tv_dimensions_selected);
         mTextFrameSelected = view.findViewById(R.id.tv_frame_selected);
-        mTextVideoSentBitrate=view.findViewById(R.id.tv_sent_bitrate);
-        mTextSentDimensions=view.findViewById(R.id.tv_sent_dimension);
-        join.setOnClickListener(this);
+        mTextVideoSentBitrate = view.findViewById(R.id.tv_sent_bitrate);
+        mTextSentDimensions = view.findViewById(R.id.tv_sent_dimension);
+        mJoinBtn.setOnClickListener(this);
         mSelectBt.setOnClickListener(this);
     }
 
@@ -143,8 +147,8 @@ private int mDimensionWith ;
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Context context=getContext();
-        if(context==null)
+        Context context = getContext();
+        if (context == null)
             return;
         try {
             ENGINE = RtcEngine.create(context.getApplicationContext(), "1a410d207deb42259b763b6edb585cab", iRtcEngineEventHandler);
@@ -159,22 +163,21 @@ private int mDimensionWith ;
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = data.getData();
-        path=getPath(getContext(),uri);
-        mSelectBt.setText(path+"");
+        path = getPath(getContext(), uri);
+        Log.i("haohao", "path:  " + path);
+        mSelectBt.setText(path + "");
         checkLocalVideo();
-        fl_local.removeAllViews();
         try {
             Intent intent = new Intent();
             setVideoConfig(ExternalVideoSourceManager.TYPE_LOCAL_VIDEO, mDimensionWith, mDimensionHeight);
             intent.putExtra(ExternalVideoSourceManager.FLAG_VIDEO_PATH, mLocalVideoPath);
             if (mService.setExternalVideoInput(ExternalVideoSourceManager.TYPE_LOCAL_VIDEO, intent)) {
-                fl_local.removeAllViews();
-                fl_local.addView(TEXTUREVIEW,
+                mFlLocal.removeAllViews();
+                mFlLocal.addView(TEXTUREVIEW,
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT);
             }
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
 
@@ -185,76 +188,37 @@ private int mDimensionWith ;
         if (v.getId() == R.id.btn_join) {
             if (!joined) {
                 TEXTUREVIEW = new TextureView(getContext());
-                // call when join button hit
                 String channelId = "" + Math.random() * (MAX_NUM - MIN_NUM) + MIN_NUM;
                 v.setEnabled(true);
-                // Check permission
-//                if (AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE, Permission.Group.CAMERA)) {
-//                    joinChannel(channelId);
-//                    return;
-//                }
-//                // Request permission
-//                AndPermission.with(this).runtime().permission(
-//                        Permission.Group.STORAGE,
-//                        Permission.Group.MICROPHONE,
-//                        Permission.Group.CAMERA
-//                ).onGranted(permissions ->
-//                {
-                    // Permissions Granted
-                    joinChannel(channelId);
-                //}).start();
+                joinChannel(channelId);
             } else {
                 joined = false;
-                join.setText(getString(R.string.join));
-                fl_local.removeAllViews();
+                mJoinBtn.setText("加入视频");
+                mFlLocal.removeAllViews();
                 ENGINE.leaveChannel();
                 handler.removeCallbacksAndMessages(null);
                 TEXTUREVIEW = null;
                 unbindVideoService();
             }
-        } else if(v.getId()==R.id.select_bt){
+        } else if (v.getId() == R.id.select_bt) {
+            if (joined == true) {
 
-
-            if(android.os.Build.BRAND.equals("Huawei")){
-                Intent intentPic = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intentPic,2);
-            }
-            if(android.os.Build.BRAND.equals("Xiaomi")){
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "video/*");
-                startActivityForResult(Intent.createChooser(intent, "选择要导入的视频"), 2);
-            }else {
                 Intent intent = new Intent();
-                if(Build.VERSION.SDK_INT < 19){
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("video/*");
-                }else {
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("video/*");
-                }
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("video/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(Intent.createChooser(intent, "选择要导入的视频"), 2);
-            }
-
+            } else
+                Toast.makeText(getContext(), "请先加入频道，再去选择本地视频", Toast.LENGTH_SHORT).show();
         }
-
-
-
-
-        else {
-//                showAlert(getString(R.string.lowversiontip));
-            }
-        }
+    }
 
     private boolean checkLocalVideo() {
         File videoFile = new File(path);
         mLocalVideoPath = videoFile.getAbsolutePath();
         mLocalVideoExists = videoFile.exists();
-        Toast.makeText(getContext(),"路径："+mLocalVideoPath+"   "+mLocalVideoExists,Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(getContext(), "路径：" + mLocalVideoPath + "   " + mLocalVideoExists, Toast.LENGTH_SHORT).show();
         if (!mLocalVideoExists) {
-
         }
         return mLocalVideoExists;
     }
@@ -297,43 +261,46 @@ private int mDimensionWith ;
         ENGINE.setDefaultAudioRoutetoSpeakerphone(true);
         ENGINE.setEnableSpeakerphone(false);
 
-        String accessToken="";
+        String accessToken = "";
         if (TextUtils.equals(accessToken, "") || TextUtils.equals(accessToken, "<#YOUR ACCESS TOKEN#>")) {
             accessToken = null;
         }
-        /** Allows a user to join a channel.
-         if you do not specify the uid, we will generate the uid for you*/
         int res = ENGINE.joinChannel(accessToken, channelId, "Extra optional Data", 0);
         if (res != 0) {
-
             return;
         }
         // Prevent repeated entry
-        join.setEnabled(false);
+        mJoinBtn.setEnabled(false);
     }
 
     private IRtcEngineEventHandler iRtcEngineEventHandler = new IRtcEngineEventHandler() {
         Toast toast;
+
         @Override
         public void onLocalVideoStats(LocalVideoStats stats) {
             super.onLocalVideoStats(stats);
-            mTextSentDimensions.setText(""+stats.encodedFrameHeight+"*"+stats.encodedFrameWidth);
-            mTextVideoSentBitrate.setText(stats.sentBitrate+"kbps");
-            mTextPreCodeFrame.setText(stats.captureFrameRate+"fps");
-            mTextEncodeFrame.setText(stats.encoderOutputFrameRate+"fps");
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    mTextSentDimensions.setText("" + stats.encodedFrameHeight + "*" + stats.encodedFrameWidth);
+                    mTextVideoSentBitrate.setText(stats.sentBitrate + "kbps");
+                    mTextPreCodeFrame.setText(stats.captureFrameRate + "fps");
+                    mTextEncodeFrame.setText(stats.encoderOutputFrameRate + "fps");
+                }
+            });
+
+
         }
 
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d", channel, uid));
-            if (isDetached()){
+            if (isDetached()) {
                 return;
             }
-            myUid = uid;
             joined = true;
             handler.post(() -> {
-                join.setEnabled(true);
-                join.setText("退出频道");
+                mJoinBtn.setEnabled(true);
+                mJoinBtn.setText("退出频道");
                 bindVideoServide();
                 ENGINE.startRtmpStreamWithoutTranscoding(mPutStreamUrl);
             });
@@ -374,9 +341,9 @@ private int mDimensionWith ;
 
     };
 
-    private  void bindVideoServide(){
-        Log.d(TAG, "bindVideoServide: "+hashCode());
-        Intent intent =new Intent();
+    private void bindVideoServide() {
+        Log.d(TAG, "bindVideoServide: " + hashCode());
+        Intent intent = new Intent();
         intent.setClass(getContext(), ExternalVideoInputService.class);
         mServiceConnection = new VideoInputServiceConnection();
         getContext().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -393,8 +360,9 @@ private int mDimensionWith ;
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mService = (IExternalVideoInputService) iBinder;
-            Log.i("haos",mService+"");
+            Log.i("haos", mService + "");
         }
+
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mService = null;
@@ -405,7 +373,7 @@ private int mDimensionWith ;
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
-        iRtcEngineEventHandler = null;
+//        iRtcEngineEventHandler = null;
         handler.removeCallbacksAndMessages(null);
         ENGINE.stopRtmpStream(mPutStreamUrl);
         RtcEngine.destroy();
@@ -428,7 +396,8 @@ private int mDimensionWith ;
         mTextDimensionsSelected.setText(mDimensionHeight + "*" + mDimensionWith);
         mTextFrameSelected.setText(mVideoFrame);
     }
-    private void putBundle(){
+
+    private void putBundle() {
         mBundle = getActivity().getIntent().getExtras();
         mDimensionWith = Integer.parseInt(mBundle.getString("dimensions_width"));
         mDimensionHeight = Integer.parseInt(mBundle.getString("dimensions_height"));
@@ -439,13 +408,12 @@ private int mDimensionWith ;
     }
 
     public static String getPath(final Context context, final Uri uri) {
-
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-
         // DocumentProvider
         if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
+
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -462,6 +430,7 @@ private int mDimensionWith ;
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
 
+
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
@@ -469,6 +438,7 @@ private int mDimensionWith ;
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {
+
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -490,10 +460,12 @@ private int mDimensionWith ;
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
             return getDataColumn(context, uri, null, null);
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
+
             return uri.getPath();
         }
 
@@ -509,7 +481,7 @@ private int mDimensionWith ;
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
             if (cursor != null && cursor.moveToFirst()) {
-                final int column_index = cursor.getColumnIndexOrThrow(column);
+                int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
             }
         } finally {
@@ -517,8 +489,11 @@ private int mDimensionWith ;
                 cursor.close();
             }
         }
+        Log.i("haohao", "cursor为空");
+
         return null;
     }
+
     /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.

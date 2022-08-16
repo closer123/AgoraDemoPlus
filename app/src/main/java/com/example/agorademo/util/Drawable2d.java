@@ -16,8 +16,6 @@
 
 package com.example.agorademo.util;
 
-import com.example.agorademo.fragment.GlUtil;
-
 import java.nio.FloatBuffer;
 
 /**

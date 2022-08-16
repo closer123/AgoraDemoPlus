@@ -1,4 +1,4 @@
-package com.example.agorademo.screenshare;
+package com.example.agorademo.input;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +13,6 @@ import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Looper;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
@@ -21,14 +20,12 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.agorademo.fragment.GLThreadContext;
-import com.example.agorademo.fragment.IExternalVideoInput;
+import com.example.agorademo.util.GLThreadContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 
 
 public class ScreenShareInput implements IExternalVideoInput {
@@ -67,8 +64,6 @@ public class ScreenShareInput implements IExternalVideoInput {
         }
 
 
-
-
 //        mWidth = mSurfaceWidth;
 //        mHeight = mSurfaceHeight;
 //        mImageReader = ImageReader.newInstance(mSurfaceWidth, mSurfaceHeight, 0x01, 2);
@@ -81,8 +76,6 @@ public class ScreenShareInput implements IExternalVideoInput {
 //        Looper.loop();
 
 
-
-
         mVirtualDisplay = mMediaProjection.createVirtualDisplay(
                 VIRTUAL_DISPLAY_NAME, mSurfaceWidth, mSurfaceHeight, mScreenDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC, target,
@@ -90,13 +83,12 @@ public class ScreenShareInput implements IExternalVideoInput {
     }
 
 
-
-
     private ImageReader mImageReader;
     private static int IMAGES_PRODUCED;
     private static final String SCREENCAP_NAME = "screencap";
     private int mWidth;
     private int mHeight;
+
     private class ImageAvailableListener implements ImageReader.OnImageAvailableListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -111,12 +103,12 @@ public class ScreenShareInput implements IExternalVideoInput {
                     }
                     image.close();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     private void saveJpeg(Image image, String name) {
         Image.Plane[] planes = image.getPlanes();
         ByteBuffer buffer = planes[0].getBuffer();
@@ -129,7 +121,9 @@ public class ScreenShareInput implements IExternalVideoInput {
         //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
         saveBitmap2file(bitmap, mContext.getApplicationContext(), name);
     }
+
     private static final String SD_PATH = Environment.getExternalStorageDirectory().getPath() + "/MediaProjection/";
+
     private static void saveBitmap2file(Bitmap bmp, Context context, String num) {
         String savePath;
         String fileName = num + ".JPEG";
@@ -150,8 +144,7 @@ public class ScreenShareInput implements IExternalVideoInput {
             fos.flush();
             fos.close();
             Toast.makeText(context, "保存成功,位置:" + filePic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -165,9 +158,6 @@ public class ScreenShareInput implements IExternalVideoInput {
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + savePath + fileName)));
 
     }
-
-
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

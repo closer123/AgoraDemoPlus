@@ -26,8 +26,6 @@ import android.opengl.EGLSurface;
 import android.util.Log;
 import android.view.Surface;
 
-import com.example.agorademo.fragment.GlUtil;
-
 /**
  * Core EGL state (display, context, config).
  * <p>
