@@ -16,13 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import java.util.Date;
-
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 
 import io.agora.rtc.RtcEngine;
-import io.agora.rtc.VideoEncodedFrame;
+
 import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
@@ -38,10 +36,6 @@ public class MainActivity extends AppCompatActivity {
     // 填写频道名称。
     private String mChannelName;
     private RtcEngine mRtcEngine;
-    private int mPrecodeFrameNums = 0;
-    private int mEncodeFrameNums = 0;
-    long mLastPrecodeTime = 0;
-    long mLastEncodeTime = 0;
     // 控件
     TextView mTextPreCodeFrame;
     TextView mTextEncodeFrame;
@@ -167,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onDestroy() {
         super.onDestroy();
-        if(mPutStreamUrl!=null)
-        mRtcEngine.stopRtmpStream(mPutStreamUrl);
+        if (mPutStreamUrl != null)
+            mRtcEngine.stopRtmpStream(mPutStreamUrl);
         mRtcEngine.leaveChannel();
         mRtcEngine.destroy();
     }
@@ -229,10 +223,10 @@ public class MainActivity extends AppCompatActivity {
         public void onLocalVideoStats(LocalVideoStats stats) {
             super.onLocalVideoStats(stats);
 
-            mTextSentDimensions.setText(""+stats.encodedFrameHeight+"*"+stats.encodedFrameWidth);
-            mTextVideoSentBitrate.setText(stats.sentBitrate+"kbps");
-            mTextPreCodeFrame.setText(stats.captureFrameRate+"fps");
-            mTextEncodeFrame.setText(stats.encoderOutputFrameRate+"fps");
+            mTextSentDimensions.setText("" + stats.encodedFrameHeight + "*" + stats.encodedFrameWidth);
+            mTextVideoSentBitrate.setText(stats.sentBitrate + "kbps");
+            mTextPreCodeFrame.setText(stats.captureFrameRate + "fps");
+            mTextEncodeFrame.setText(stats.encoderOutputFrameRate + "fps");
         }
 
         @Override
@@ -326,12 +320,12 @@ public class MainActivity extends AppCompatActivity {
         mTextDimensionsSelected = findViewById(R.id.tv_dimensions_selected);
         mTextFrameSelected = findViewById(R.id.tv_frame_selected);
         mTextCamreaCollection = findViewById(R.id.tv_camrea_collection);
-        mTextVideoSentBitrate=findViewById(R.id.tv_sent_bitrate);
-        mTextSentDimensions=findViewById(R.id.tv_sent_dimension);
+        mTextVideoSentBitrate = findViewById(R.id.tv_sent_bitrate);
+        mTextSentDimensions = findViewById(R.id.tv_sent_dimension);
 
     }
 
-    private void putBundle(){
+    private void putBundle() {
         mBundle = this.getIntent().getExtras();
         mDimensionWith = Integer.parseInt(mBundle.getString("dimensions_width"));
         mDimensionHeight = Integer.parseInt(mBundle.getString("dimensions_height"));

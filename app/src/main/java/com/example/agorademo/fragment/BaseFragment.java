@@ -10,20 +10,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-public class BaseFragment extends Fragment
-{
+public class BaseFragment extends Fragment {
     protected Handler handler;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handler = new Handler(Looper.getMainLooper());
     }
 
-    protected void showAlert(String message)
-    {
-        handler.post(()->{
+    protected void showAlert(String message) {
+        handler.post(() -> {
             Context context = getContext();
             if (context == null) {
                 return;
@@ -35,15 +32,13 @@ public class BaseFragment extends Fragment
         });
     }
 
-    protected final void showLongToast(final String msg)
-    {
-        handler.post(new Runnable()
-        {
+    protected final void showLongToast(final String msg) {
+        handler.post(new Runnable() {
             @Override
-            public void run()
-            {
-                if (BaseFragment.this == null || getContext() == null)
-                {return;}
+            public void run() {
+                if (BaseFragment.this == null || getContext() == null) {
+                    return;
+                }
                 Toast.makeText(getContext().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             }
         });

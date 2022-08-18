@@ -14,7 +14,7 @@ public class LocalVideoMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_local_video_main);
         getSupportFragmentManager()    //
                 .beginTransaction()
-                .add(R.id.fragment_container,new SwichExternalVideoFragment())   // 此处的R.id.fragment_container是要盛放fragment的父容器
+                .add(R.id.fragment_container, new SwichExternalVideoFragment())   // 此处的R.id.fragment_container是要盛放fragment的父容器
                 .commit();
 
     }
